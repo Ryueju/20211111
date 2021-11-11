@@ -1,0 +1,33 @@
+[{
+    "prodId": 1,
+    "prodName": "과테말라 안티구아",
+    "prodDesc": "과테말라 안티구아산 고급 원두",
+    "likeIt": 4.5,
+    "originPrice": 6000,
+    "salePrice": 5000,
+    "prodImage": "과테말라 안티구아.jpg"
+}, {
+    "prodId": 2,
+    "prodName": "니카라구아 분쇄원두",
+    "prodDesc": "산미,마일드,단맛",
+    "likeIt": 5.0,
+    "originPrice": 7000,
+    "salePrice": 5500,
+    "prodImage": "니카라구아 더치핸드드립용 분쇄원두.jpg"
+}, {
+    "prodId": 3,
+    "prodName": "브라질산토스",
+    "prodDesc": "깊은맛,신맛,에스프레소베이스",
+    "likeIt": 4.0,
+    "originPrice": 7500,
+    "salePrice": 6000,
+    "prodImage": "브라질산토스.jpg"
+}, {
+    "prodId": 4,
+    "prodName": "이디야커피",
+    "prodDesc": "신선한 원두",
+    "likeIt": 4.0,
+    "originPrice": 5000,
+    "salePrice": 4000,
+    "prodImage": "코스타리카 따라주5.jpg"
+}]

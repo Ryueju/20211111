@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script>
+        class Student {
+            constructor(studNo, studName, math, eng, hobby) {
+                this.studNo = studNo;
+                this.studName = studName;
+                this.math = math;
+                this.eng = eng;
+                this.hobby = hobby;
+            }
+            getAverage() {
+                return Math.round((this.math + this.eng) / 2);
+            }
+        }
+        const students = [];
+        let s1 = new Student('21-01', '정도영', 90, 80, '독서');
+        let s2 = new Student('21-02', '이바다', 84, 70, '바둑');
+        let s3 = new Student('21-03', '안경만', 78, 90, '오목');
+        let s4 = new Student('21-04', '김은지', 80, 69, '장기');
+        let s5 = new Student('21-05', '류이주', 70, 88, '체스');
+        students.push(s1);
+        students.push(s2);
+        students.push(s3);
+        students.push(s4);
+        students.push(s5);
+
+        $(document).ready(function () {
+            let table = $('<table>');
+            $(table).attr('border', '1');
+            let thead = $('<thead>');
+
+            $('#show').append(table);
+            $(table).append(thead);
+            $(thead).append(createThead(students[0]));
+            $(table).append(createTbody(students));
+
+        })
+
+        function createThead(obj) {
+            let tr = $('<tr>');
+            for (let field in obj) {
+                let th = $('<th>');
+                $(th).text(field);
+                $(tr).append(th);
+            }
+            let th = $('<th>');
+            $(th).text('버튼');
+            $(tr).append(th);
+            return $(tr);
+        }
+
+        function createTbody(ary) {
+            let tbody = $('<tbody>');
+            for (let obj of ary) {
+                let tr = $('<tr>');
+                $(tr).on({'mouseover':mouseOverFnc,'mouseout':mouseOutFnc});
+                for (let val in obj) {
+                    let td = $('<td>');
+                    $(td).text(obj[val]);
+                    $(tr).append(td);
+                }
+                let td = $('<td>');
+                let btn = $('<button>')
+                $(btn).text('삭제');
+                $(btn).click(delFnc);
+                $(td).append(btn);
+                $(tr).append(td);
+                $(tbody).append(tr);
+            }
+            return tbody;
+        }
+        
+        function delFnc(){
+           event.stopPropagation();
+           $(this).parentsUntil('tbody').remove();
+        }
+
+        function mouseOverFnc(){
+            $(this).css({'background-color':'yellow','color':'red'});
+        }
+
+        function mouseOutFnc(){
+            $(this).css({'background-color':'','color':''});
+        }
+    </script>
+</head>
+
+<body>
+    <h3>학생명단</h3>
+    <div id="show"></div>
+</body>
+
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery/fileUpload.html</title>
+    <script src="jquery-3.6.0.min.js"></script>
+     <script src="../ckeditor/ckeditor.js"></script>
+    <style>
+        th {
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <fieldset>
+        <!--묶어주려고-->
+        <legend>파일업로드</legend>
+        <!--title-->
+        <form id="frm" action="../FileUploadServlet" method="POST" enctype="multipart/form-data">
+            <!--onsubmit="formSubmit()">-->
+            <!--업로드(submit)버튼클릭하면 formsubmit이벤트함수 실행-->
+            <!--파일을 보낼때는 post, multipart/form-data 해야함-->
+            <table>
+                <tr>
+                    <td>상품명</td>
+                    <td><input type="text" name="prod_item"></td>
+                </tr>
+                <tr>
+                    <td>상품설명</td>
+                    <td><textarea name="prod_desc" id="prod_desc" cols="30" rows="5"></textarea></td>
+                </tr>
+                <tr>
+                    <td>평점</td>
+                    <td><input type="text" name="like_it"></td>
+                </tr>
+                <tr>
+                    <td>가격</td>
+                    <td><input type="number" name="origin_price"></td>
+                </tr>
+                <tr>
+                    <td>할인가격</td>
+                    <td><input type="number" name="sale_price"></td>
+                </tr>
+                <tr>
+                    <td>파일</td>
+                    <td><input type="file" name="prod_image"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="submit" value="업로드"></td>
+                </tr>
+            </table>
+        </form>
+    </fieldset>
+    <hr>
+    <div id="show"></div>
+
+    <script>
+    	//ckeditor 호출
+    	CKEDITOR.replace("prod_desc", {
+           filebrowserUploadUrl : '../CkeditorServlet'
+        });
+    
+        //ajax 호출.
+        $.ajax({
+            url: '../GetItemServlet', //전체 데이터를 가지고 오는 servlet
+            dataType: 'json',
+            success: function (result) {
+                let table, thead, tbody, tr, td;
+                table = $('<table>').attr('border', 1).attr('id','tbl');
+                thead = $('<thead>');
+                $(thead).append(
+                    $('<tr>').append(
+                        $('<th>').text('상품ID'),
+                        $('<th>').text('상품명'),
+                        $('<th>').text('상세설명'),
+                        $('<th>').text('평가점수'),
+                        $('<th>').text('가격'),
+                        $('<th>').text('할인가격'),
+                        $('<th>').text('이미지')
+                    )
+                );
+                $(table).append(thead);
+
+
+                tbody = $('<tbody>');
+
+
+                result.forEach(function (val, ind) {
+                    // let tr = $('<tr>'); //이미지 안 올릴때 엑박 안뜨게..
+                    
+                    //     let img = $('<img>').attr({
+                    //         'src' : "../images" + val.prodImage,
+                    //         'width' : '50px'
+                    //     });
+                    //     let a = $('<a>').attr('href', '../')
+                    $(tr).append(
+                        $('<td>').text(val.prodId),
+                        $('<td>').text(val.prodName),
+                        $('<td>').text(val.prodDesc),
+                        $('<td>').text(val.likeIt),
+                        $('<td>').text(val.originPrice),
+                        $('<td>').text(val.salePrice),
+                        $('<td>').html($('<img width="50px" src="../image/'+val.prodImage+'">')),
+                    );
+                    $(tbody).append(tr);
+                })
+                $(table).append(tbody);
+
+                $('#show').append(table);
+
+                $('th').eq(1).css('width', '200px')
+                    .end().eq(6).css('width', '120px');
+
+            },
+            error: function (reject) {
+                console.log(reject)
+            }
+        });
+
+        function formSubmit() {
+            event.preventDefault(); //원래 있는 기능을 막겠다 (원래있는기능은 action속성에 설정되어있는 서블릿으로 데이터가 넘어가는 것. 그걸 막아버림)
+            let formData = new FormData(); //form태그 안 데이터를 key:value 형식으로 담아줌
+            formData.append('prod_item', $('input[name="prod_item"]').val()); 
+            //FormData객체가 갖는 append메소드는 -> prod_item(KEY)=맥심모카골드(VALUE) 형식으로 값 저장시킴    
+            formData.append('prod_desc', $('textarea[name="prod_desc"]').val());
+            formData.append('like_it', $('input[name="like_it"]').val());
+            formData.append('origin_price', $('input[name="origin_price"]').val());
+            formData.append('sale_price', $('input[name="sale_price"]').val());
+            formData.append('prod_image', document.querySelector('input[name="prod_image"]').files[0]); //가지고 온 첫번째 파일
+
+            formData.forEach(function (val, ind) {
+                console.log(val);
+            });
+
+            //ajax호출 파일 업로드.
+            $.ajax({
+                url: $('#frm').attr('action'), // FileUploadServlet
+                type: 'POST',
+                data: formData,
+                processData: false, //data가 formData이면 processData,contentType가 false여야 함
+                contentType: false,
+                dataType: 'json',
+                success: function (result) {
+                    console.log(result);               
+               		//tr만들어서
+               		let tr = $('<tr>').append(
+               			$('<td>').text(result.prodId),	
+               			$('<td>').text(result.prodName),
+               		 	$('<td>').text(val.prodDesc),
+               			$('<td>').text(result.likeIt),	
+               			$('<td>').text(result.originPrice),	
+               			$('<td>').text(result.salePrice),
+               			$('<td>').html('<a href="../shop-homepage/item.html?id='+ result.prodId + '"><img width="50px" src="../image/' + result.prodImage +'"></a>')
+               		);
+               		$('#tbl>tbody').append(tr);
+               		
+               		//입력값 초기화 - 업로드 하고 나서도 입력값이 input태그에 남아있어서 업로드와 동시에 태그에 사용자가 적어놓은 값 초기화시킴
+               		$('input[name="prod_item"]').val('');
+               		$('textarea[name="prod_desc"]').val('');
+               		$('input[name="like_it"]').val('5'); //초기값으로 별점5점 ㅎㅎ
+               		$('input[name="origin_price"]').val('4000'); //초기값으로 가격 4000원설정
+               		$('input[name="sale_price"]').val('3500'); //초기값으로 가격 3500원설정
+                },
+                error: function (reject) {
+                    console.log(reject)
+                }
+            })
+        }
+    </script>
+
+</body>
+
+</html>

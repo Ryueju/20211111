@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>javascript/xml.html</title>
+</head>
+<body>
+	<div id="show"></div>
+	<script>
+	//하재의님 감사합니다 이가 아니예요!!
+		//Ajax => new XMLHttpRequest();
+		let xhtp = new XMLHttpRequest();
+		xhtp.onreadystatechange = function(){
+			if(xhtp.readyState == 4 && xhtp.status == 200){
+				console.log(xhtp.responseXML);
+				let xmlDoc = xhtp.responseXML;
+				createPage(xmlDoc);
+			}	
+		}
+		xhtp.open('get','../GetMemberServlet');
+		xhtp.send();
+		
+		//페이지 작성하는 함수.
+		function createPage(xmlData){
+			let table,tbody,tr,td; 
+			table = document.createElement('table');
+			table.setAttribute('border','1');
+			tbody = document.createElement('tbody');
+			table.appendChild(tbody);
+			//data
+			let rows = xmlData.getElementsByTagName('row');
+			console.log(rows);
+			//tr생성
+			for(let i=0;i<rows.length;i++){
+				tr=document.createElement('tr');
+				//td를 반복생성.
+				for(let j=0; j<4; j++){
+				td = document.createElement('td');
+				td.innerText = rows[i].children[j].textContent;
+				tr.appendChild(td);					
+				}
+				tbody.appendChild(tr);
+			}
+			
+			//최종.
+			document.getElementById('show').appendChild(table);
+		}
+		
+		
+	</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery/jq_2.html</title>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#leftToRight').on('click',function(){     //append는 상위요소 마지막에 붙여주겠다.
+                $('#rej').prepend($('#subj :selected')); //prepend는 상위요소 첫번째에 붙여주겠다.
+            })
+            $('#rightToLeft').on('click',function(){
+                $('#rej :selected').prependTo($('#subj')); //input이나 radio속성의 경우 selected말고 checked쓰면됨.
+            })
+            
+        });
+    </script>
+</head>
+<body>
+    <select name="subjects" id="subj" size="10">
+        <option value="">왼쪽1</option>
+        <option value="">왼쪽2</option>
+        <option value="">왼쪽3</option>
+        <option value="">왼쪽4</option>
+        <option value="">왼쪽5</option>
+    </select>
+    <button id="leftToRight">&gt;</button>
+    <button id="rightToLeft">&lt;</button>
+    <select name="rejects" id="rej" size="10">
+        <option value="">오른쪽1</option>
+        <option value="">오른쪽2</option>
+        <option value="">오른쪽3</option>
+        <option value="">오른쪽4</option>
+        <option value="">오른쪽5</option>
+    </select>
+</body>
+</html>

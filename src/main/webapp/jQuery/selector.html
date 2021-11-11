@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery/selector.html</title>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script>
+        class Student {
+            constructor(studNo, studName, math, eng, hobby) {
+                this.studNo = studNo;
+                this.studName = studName;
+                this.math = math;
+                this.eng = eng;
+                this.hobby = hobby;
+            }
+            getAverage() { //평균가져오는 메소드
+                return Math.round((this.math + this.eng) / 2);
+            }
+        }
+        const students = [];
+        let s1 = new Student('21-01', '정도영', 90, 80, '독서');
+        let s2 = new Student('21-02', '이바다', 84, 70, '바둑');
+        let s3 = new Student('21-03', '안경만', 78, 90, '오목');
+        let s4 = new Student('21-04', '김은지', 80, 69, '장기');
+        let s5 = new Student('21-05', '류이주', 70, 88, '체스');
+        students.push(s1);
+        students.push(s2);
+        students.push(s3);
+        students.push(s4);
+        students.push(s5);
+
+        $(document).ready(function () { //도큐먼트가 다 로딩된 이후 함수 실행. body보다 앞에 있지만, body이후 실행됨
+            let $table = $('<table>').attr('border', '1');
+            let $thead = $('<thead>');
+            let $tbody = $('<tbody>');
+
+            $($table).append($thead);
+            $($table).append($tbody);
+
+            let $tr = $('<tr>').append(
+                $('<th>').text('학번'),
+                $('<th>').text('이름'),
+                $('<th>').text('영어'),
+                $('<th>').text('수학'),
+                $('<th>').text('취미'),
+                $('<th>').text('평균'),
+                $('<th>').text('버튼')
+            );
+            $thead.append($tr);
+
+            $(students).each(function (ind, val) {
+                let $tr = $('<tr>').append(
+                    $('<td>').text(val.studNo),
+                    $('<td>').text(val.studName),
+                    $('<td>').text(val.eng),
+                    $('<td>').text(val.math),
+                    $('<td>').text(val.hobby),
+                    $('<td>').text(val.getAverage()),
+                    $('<td>').click(tdFnc).append($('<button>삭제</button>').click(delFnc)) //제이쿼리 메소드 click
+                );
+                $tr.click(trFnc)
+                //$tr.mouseover(mouseOverFnc);
+                //$tr.mouseout(mouseOutFnc);
+                $tr.on({'mouseover':mouseOverFnc,'mouseout':mouseOutFnc}); 
+                //on은 매개값으로 이벤트전체 가능. 실행할이벤트,해당함수. 그리고 한번에 이벤트함수 한번에 다 등록가능
+                $tbody.append($tr);
+            });
+            $('#show').append($table);
+
+            function trFnc(){
+                console.log($(this));
+                let sno = $(this).children().eq(0).text();
+                let sname = $(this).children().eq(1).text();
+                window.alert(`학번: ${sno}, 이름: ${sname}`);
+            }
+            function tdFnc(){
+                console.log($(this));
+            }
+            //삭제기능
+            function delFnc() {
+                event.stopPropagation(); 
+                //버튼을 클릭한 것이지만, 버튼,td,tr,table,document 전부 클릭된걸로 봐도 무방.
+                //그래서 이벤트가 전파되는것을 막고자 이 메소드 실행시킴.
+                console.log($(this));
+                // let avg = $(this).parent().prev().text(); //버튼의 부모인 td의 앞에 있는 td. prev -> 해당태그의 이전 태그
+                // let hob = $(this).parent().prev().prev().text(); // next -> 해당태그의 다음 태그
+                // window.alert(`평균:${avg}, 취미:${hob}`);
+                $(this).parentsUntil('tbody').remove(); 
+                //버튼을 기준으로 tbody만나기 전에 있는 부모. 즉 매개값태그는 포함안됨.
+            }
+            function mouseOutFnc(){
+                $(this).css({'background-color':'','color':''}); 
+                //css -> 스타일지정하는 메소드
+                //javascript에선 btn.style.backgroundColor = 'yellow'; 이래했음
+            }
+            function mouseOverFnc(){
+                $(this).css({'background-color':'yellow', 'color':'red'}); 
+                //css -> 스타일지정하는 메소드
+                //javascript에선 btn.style.backgroundColor = 'yellow'; 이래했음
+            }
+            // let $div = $('<div />').html('<h3>Hello</h3>').attr('id','id1');
+            // let $p = $('<p />').text('<h3>Hello</h3>').attr('class','id1');
+
+            // $('body').append($div, $p);
+
+            // console.log($('div#id1>h3').text());
+            // console.log($('p.id1').text());
+        });
+    </script>
+</head>
+
+<body>
+    <!-- <div>
+       <h3>Bad</h3>
+   </div> 
+   <p>Bad</p> -->
+    <h3>학생명단</h3>
+    <div id="show"></div>
+
+</body>
+
+</html>

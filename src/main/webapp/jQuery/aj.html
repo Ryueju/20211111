@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.ajax({
+                url:'../javascript/MOCK_DATA.json',
+                type: 'get',
+                data: {
+                    id: 3,
+                    name: 'hong'
+                },
+                dataType: 'json',
+                success: successCallBack,
+                error: errorCallBack
+            });
+
+            function successCallBack(result){
+                console.log(result);
+                createTable(result)
+            }
+            
+            function errorCallBack(reject){
+                console.log(reject);
+                window.alert(`code:${reject.status}, msg:${reject.statusText}`);
+            }
+
+            function createTable(ary){
+                let table = $('<table>');
+                $(table).attr('border','1');
+                $('#show').append(table);
+                $(table).append(makeThead(ary[0]));
+                $(table).append(makeTbody(ary));
+            }
+
+            function makeThead(obj){
+                let thead = $('<thead>');
+                let tr = $('<tr>');
+                for(let field in obj){
+                    console.log(field);
+                    let th = $('<th>');
+                    $(th).text(field);
+                    $(tr).append(th);
+                }
+                $(thead).append(tr);
+                return thead;
+            }
+
+            function makeTbody(ary){
+                let tbody = $('<tbody>');
+                for(let obj of ary){
+                    let tr = $('<tr>');
+                    for(let val in obj){
+                        let td = $('<td>');
+                        $(td).text(obj[val]);
+                        $(tr).append(td);
+                    }
+                    $(tbody).append(tr);
+                }
+                return tbody;
+            }
+        })
+    </script>
+</head>
+<body>
+    <div id="show"></div>
+</body>
+</html>

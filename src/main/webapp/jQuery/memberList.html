@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>jQuery/memberList.html</title>
+<script src="jquery-3.6.0.min.js"></script> <!-- 라이브러리 추가 -->
+<script>
+	//생성자 함수.object를 만들어주는 function
+	function Member(id,name,score){
+		this.id = id;
+		this.name = name;
+		this.score = score;
+	}
+	let members = [
+		new Member('user1','김소영',80),
+		new Member('user2','위정아',85),
+		new Member('user3','정혜윤',90)
+	];
+	$(document).ready(function(){ //도큐먼트가 다 로딩 된 이후 이 함수를 실행하겠습니다.
+		// let ul = document.createElement('ul');
+		// members.forEach(function(val,ind){
+		// 	let li = document.createElement('li');
+		// 	li.textContent = `id:${val.id}, name:${val.name}, score:${val.score}`;
+		// 	ul.appendChild(li);
+		// 	document.getElementById('show').appendChild(ul);
+		//}) 이걸 제이쿼리로 바꿔보자
+		let ul = $('<ul id="addt"><li>apple</li></ul>'); // jqueryObject
+		console.log(ul);
+		// ul = document.createElement('ul'); //scriptObject 같은 태그라도 제이쿼리로 만들어진 태그 != 자바스크립트로 만들어진 태그
+		// console.log(ul);
+
+		$(members).each(function(ind,val){
+			//하위요소를 append.
+			$(ul).append($('<li>').text(`id:${val.id}, name:${val.name}, score:${val.score}`));
+			//ul을 자바스크립트obj를 사용하고싶으면 걍 ul. / 제이쿼리obj사용하고 싶으면 $(ul)로 쓰기
+			//그런데 ul태그가 제이쿼리 obj로 선언된 것 밖에 없으면 $()생략가능
+			});
+		$('#show').append(ul);
+	});
+</script>
+</head>
+<body>
+	<div id='show'></div>
+	<!--<ul><li>아이디,이름,점수</li><li>...</li><li>...</li></ul>-->
+</body>
+</html>

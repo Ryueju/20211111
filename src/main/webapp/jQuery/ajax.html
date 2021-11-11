@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery/ajax.html</title>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // ajax : XMLHttpRequest();
+            $.ajax({ //아작스 호출
+                url: '../javascript/MOCK_DATA.json', //요청페이지(txt,html,xml,json)
+                type: 'get', //요청방식 get,post | 따로 안적어주면 디폴트는 get방식
+                data: {
+                    id: 3,
+                    name: 'hong'
+                }, //'id=3&name=hong', //parameter => request.getParameter();
+                dataType: 'json', //가지고 오는 데이터형식 | json이면 알아서 parse 완료하여 가져옴 = JSON.parse(this.responseText)
+                success: successCallBack, //페이지요청이 정상적으로 이뤄지면 실행할 콜백함수 적기 
+                error: errorCallBack
+            });
+
+
+            // success 콜백함수.
+            function successCallBack(data, textStatus, //제일 마지막에 실행되는 함수.
+            jqXHR) { //data,서버상태:에러코드(scuccest or 404 or ...),요청정보를가지고있는객체
+                //페이지를 지정.
+                console.log(data, textStatus, jqXHR);
+                // createTable(data);
+                let obj = data[0]; //{id:?, first_name:?, last_name:?, ...}
+                let fields = []; //['id','first_name','last_name','email', ...]
+                for (let field in obj) {
+                    console.log(field);
+                    fields.push(field);
+                }
+                console.log(fields);
+                //table, tbody
+                let table = $('<table>').attr({
+                    'border': 1,
+                    'id': 'tbl'
+                });
+                let tbody = $('<tbody>');
+                $(table).append(tbody);
+
+                //tr요소
+                $(data).each((ind, val) => { //파라미터 두개를 받아서 중괄호 블럭을 실행(arrow function)
+                    let tr = $('<tr>');
+                    for (let field of fields) {
+                        //$(tr).append($('<td>')).text(val[field]); //append : 앞에나온요소 하위에 붙이겠다
+                        $('<td>').text(val[field]).appendTo(tr); //appendTo : 만들어진 요소를 해당상위요소에 붙이겠다.
+                    }
+                    $(tr).append($('<button>').text('삭제'));
+                    $(tbody).append(tr);
+                });
+                //show
+                $('#show').append(table);
+                //$('#tbl>tbody>tr>button').on('click', clickFnc); //이렇게 걸면 이벤트로 만들어진 새로운 tr에는 이벤트적용X
+                $(document).on('click','button',clickFnc); //이벤트종류,이벤트적용할요소,이벤트함수
+                //이렇게 지정해야 새로운 tr에도 이벤트적용됨.
+                //꼭 document아니어도 ㄱㅊ. 이벤트적용할 요소의 상위요소이기만 하면 됨. ex)#tbl>tbody
+
+                //<스타일지정> p.210
+                //$('#tbl>tbody>tr:nth-child(2n)').css('background-color','yellow');
+                //$('#tbl>tbody>tr:eq(2)').css('background-color','yellow'); 
+                //lt : 인덱스값 기준 작은 요소, gt: 인덱스값 기준 큰 요소, eq: 해당 인덱스값 요소
+                //eq는 해당 메소드도 존재.
+                //$('#tbl>tbody>tr').slice(2).css('background-color','yellow'); //범위지정하여 스타일추가
+                //$('#tbl>tbody>tr:nth-of-type(2n)').css('background-color','yellow'); //같은타입요소만 선택, 스타일추가
+                //$('#tbl>tbody>tr').first().css('background-color','yellow'); //last,first
+                //$('#tbl>tbody>tr>td:contains(Matty)').css('background-color','yellow'); //해당텍스트값을 가진 요소만 스타일추가
+                //$('#tbl>tbody>tr').contents('button').css('background-color','yellow'); 
+                //contents : 해당되는태그를 포함한 요소 | find() 도 비슷한 기능
+                //$('#tbl>tbody>tr:not(:contains(Matty))').css('background-color','yellow'); //not() : ~를 제외한 요소
+                //$('#tbl>tbody>tr:has(:contains(Matty))').css('background-color','yellow'); //has() : ~를 가진 요소
+                $('#tbl>tbody>tr').filter(':nth-child(2n)').css('background-color','yellow'); //filter() : ~를 가진 요소 걸러내겠다.
+                
+            }
+            // click 콜백함수
+            function clickFnc() {
+                event.stopPropagation(); //버튼누르면 버튼이벤트만 실행. 이벤트전파막기.
+                console.log($(this));
+                let trClone = $(this).parent().clone(); //clone : 해당요소를 하나 카피(요소에 적용된 이벤트까지는 카피못함)
+                $('#tbl>tbody>tr:nth-child(1)').after(trClone); //after해당요소앞에추가,before해당요소뒤에추가
+                // $(this).parent().remove();
+            }
+            // error 콜백함수
+            function errorCallBack(jqXHR, textStatus, errorThrown) {
+                console.error(jqXHR, textStatus, errorThrown)
+                window.alert(`code:${reject.status}, msg:${reject.statusText}`);
+            }
+
+            function createTable(ary) {
+                let table = $('<table>');
+                $(table).attr('border', '1');
+                $('#show').append(table);
+                $(table).append(createThead(ary[0])); //배열전체 넘겨줄 필요 없이 한개만 넘겨주면 됨
+                $(table).append(createTbody(ary));
+            }
+
+            function createThead(obj) {
+                console.log(obj);
+                let thead = $('<thead>');
+                let tr = $('<tr>');
+                $(thead).append(tr);
+                for (let field in obj) {
+                    console.log(field);
+                    let th = $('<th>');
+                    $(th).text(field);
+                    $(tr).append(th);
+                }
+                return thead;
+            }
+
+            function createTbody(ary) {
+                console.log(ary);
+                let tbody = $('<tbody>');
+                for (let obj of ary) {
+                    console.log(obj);
+                    let tr = $('<tr>');
+                    for (let val in obj) {
+                        let td = $('<td>');
+                        $(td).text(obj[val]);
+                        $(tr).append(td);
+                    }
+                    $(tbody).append(tr);
+                }
+                return tbody;
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div id="show"></div>
+</body>
+
+</html>

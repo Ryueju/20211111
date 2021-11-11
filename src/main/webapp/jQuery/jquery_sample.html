@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery/jquery_sample.html</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <style>
+        #field{
+            border: 2px solid gray;
+            width: 88%;
+            height: 540px;
+            
+        }
+
+        #field>div{
+            display: inline-block;
+            width: 100px;
+            height: 30px;
+            height: 30px;border: 1px solid salmon;
+
+        }
+    </style>
+    <body>
+        <input type="text" id="addValue">
+        <button id="addBtn">추가</button>
+        <button id="delBtn">삭제</button>
+
+        <div id="field"></div>
+    </body>
+    <script>
+        let sample = 
+        'Jim Steinmeyer and Peter Lamont take the reader on a rollicking journey from the dawn of civilization to the present. This magnificent history of magic goes beyond all others in marrying the evolution of that ancient art to the evolution of science, technology, philosophy, and myth. It shows how magic has mirrored all of these, yet stayed a step ahead in its capacity to inspire wonder.';
+
+        let samAry = sample.replace(',','').replace('.','').replace(' ','').replace('-','');
+        for(let m of samAry){
+            let div = $('<div>').text(m);
+                $('#field').append(div);
+        }
+        $('#addValue'),on('keyup',function(){
+                if(eventCode === 13){
+                    addFnc();
+                }
+        })
+        
+        $('#addBtn').on('click',addFnc);
+        $('#delBtn').on('click',delFnc);
+
+        function addFnc(){
+            let val = $('<#addValue>').val();
+            if(val == null || val == '') return;
+
+            let div = $('<div>').text(val);
+                $('#field').append(div);
+                $('#addValue').val('');
+        }
+        //del말고 visibility : hidden 속성으로 바꿔서 하기
+        function delFnc(){
+            let val = $('<#del>')
+        }
+
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

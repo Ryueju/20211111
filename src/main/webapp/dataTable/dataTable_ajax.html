@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dataTable/dataTable_ajax.html</title>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script
+	src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script>
+	$(document).ready(function() {
+		$.ajax({
+			url : '../DataTableServlet', //10sec.
+			dataType : 'json',
+			success :dataTableFnc,
+			error : function(reject) {
+
+				console.log(reject);
+			}
+
+		})
+		function dataTableFnc(data) {
+			let dataSet = data;
+			$('#example').DataTable({
+				data : dataSet,
+				columns : [
+				 { title: "Name" },
+				 { title: "Position" },
+				 { title: "Office" },
+				 { title: "Extn." },
+				 { title: "Start date" },
+				 { title: "Salary" }
+				]
+			});
+		}
+	});
+</script>
+</head>
+<body>
+	<table id="example" class="display" width="100%"></table>
+</body>
+</html>

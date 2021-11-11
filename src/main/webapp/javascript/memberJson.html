@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>javascript/memberJson.html</title>
+<style>
+* {
+	margin: 0px;
+	padding: 0px;
+}
+
+#show {
+	clear: both; /*앞전에 float속성을 지워주겠다...? 검색해보기*/
+	float: left;
+	border: solid white 3px;
+	border-top-color : gray;
+	width: 56vw;
+	margin-top:20px;
+}
+
+#content {
+	float: left;
+	/*border: gray solid 1px;*/
+	width: 40vw;
+	margin-top: 20px;
+}
+
+span {
+	font-size: large;
+	font-weight: bold;
+	margin-left: 230px;
+}
+
+th{
+	background-color: rgb(245, 232, 117);
+}
+
+button {
+	width: 60px;
+	background-color: rgb(250, 242, 171);
+	font-weight: bold;
+}
+
+.row>.title {
+	display: inline-block;
+	width: 10vw;
+	background-color: rgb(221, 135, 238);
+	color: white;
+	font-weight: bold;
+	border: gray solid 1px;
+}
+
+.row>.content {
+	display: inline-block;
+	width: 25vw;
+	background-color: rgb(248, 213, 255);
+}
+#addRow{
+	/*border: 1px dotted blue;*/
+	width: 590px;
+	height: 100px;
+}
+#addRow>.control{
+	float: left;
+	width: 450px;
+	/*border: 1px solid red;*/
+	height: 100px;
+}
+#addRow>.btn{
+	float: left;
+	width: 130px;
+	/*border: 1px solid yellow;*/
+	height: 100px;
+}
+label{
+	background-color: pink;
+	display : inline-block;
+	width: 70px;
+	text-align: center;
+	font-weight: bold;
+	margin-left: 5px;
+	margin-top: 5px;
+	border: 1px solid hotpink;
+}
+.control>input{
+	width: 130px;
+	margin-left: 5px;
+}
+.control>input#user_men{
+	width: 20px;
+}
+.control>input#user_women{
+	width: 20px;
+}
+.btn>button{
+	background-color: hotpink;
+	color: white;
+	margin-left: 30px;
+}
+.btn>button:first-child{
+	background-color: hotpink;
+	color: white;
+	margin-top: 10px;
+}
+.btn>button:hover{
+	background-color: purple;
+	color: white;
+}
+tbody>tr>td:first-child:hover{
+	background-color: tomato;
+	color: white;
+}
+tbody>tr>td:nth-of-type(2):hover{
+	background-color: rgb(255, 197, 71);
+	color: white;
+}
+</style>
+</head>
+
+<body>
+	<div id="addRow">
+		<div class="control">
+			<label for="user_id">아이디</label><input id="user_id" type="text" placeholder="Id를 입력하세요.">
+			<label for="user_name">이름</label><input id="user_name" type="text" placeholder="이름을 입력하세요."><br>
+			<label for="user_birth">생년월일</label><input id="user_birth" type="date" placeholder="1997-08-05">
+			<label for="user_phone">연락처</label><input id="user_phone" type="text" placeholder="010-1234-5678"><br>
+			<label for="user_addr">주소</label><input id="user_addr" type="text" placeholder="대구광역시">
+			<label for="user_men">남</label><input name="gender" id="user_men" type="radio" value="men">
+			<label for="user_women">여</label><input name="gender" id="user_women" type="radio" value="women" checked="checked">
+		</div>
+		<div class="btn">
+			<button onclick="addMember()">등록</button><br>
+			<button onclick="modMember()">수정</button><br>
+			<button onclick="delMember()">삭제</button>
+		</div>
+	</div>
+	<div id="show"></div>
+	<div id="content">
+		<div class='row'>
+			<div class='title'>id</div>
+			<div class='content'>user1</div>
+		</div>
+		<div class='row'>
+			<div class='title'>name</div>
+			<div class='content'>홍길동</div>
+		</div>
+		<div class='row'>
+			<div class='title'>생일</div>
+			<div class='content'>1997-08-05</div>
+		</div>
+	</div>
+
+	<script>
+		//Ajax => new XMLHttpRequest();
+		let xhtp = new XMLHttpRequest();
+		xhtp.onreadystatechange = function () {
+			if (xhtp.readyState == 4 && xhtp.status == 200) {
+				let data = JSON.parse(xhtp.responseText);
+				console.log(data);
+				createPage(data);
+				
+			}
+		}
+		//get방식으로 요청
+		xhtp.open('get', '../GetMemberJsonServ');
+		xhtp.send();
+		
+		const titles = ['userId','userName','gender','birthDate','phone','address'];
+		//post방식으로 요청
+		//xhtp.open('post','../GetMemberJsonServ');
+		//xhtp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		//xhtp.send("id=user4&name=Hong&addr=daegu171"); //DB에다 insert하기위해 파라미터=값&(또다른파라미터넘기기위해선&쓰기)
+
+		//페이지 작성하는 함수.
+		function createPage(jsonData) {
+			let div,span,table, thead, tbody, tr, td, button;
+			div = document.createElement('div');
+			span = document.createElement('span');
+			span.innerHTML = "회원리스트";
+			document.getElementById("show").appendChild(div);
+			div.appendChild(span);
+			table = document.createElement('table');
+			table.setAttribute('border','1');
+			document.getElementById("show").appendChild(table);
+			thead = document.createElement('thead');
+			table.appendChild(thead);		
+			
+			let th = ['userId','userName','gender','birthDate','phone','address','DELETE']; //타이틀은 MemberVO의 필드값과 동일하게.
+			tr = document.createElement('tr');
+			thead.appendChild(tr);
+			for(let title of th){  //th만들기
+				td = document.createElement('th'); //td.textContent = title.toUpperCase(); 등으로 타이틀 대문자로 변경가능
+				td.innerHTML = title;
+				tr.appendChild(td);
+			}
+			
+			tbody = document.createElement('tbody');
+			table.appendChild(tbody);
+			for(let row of jsonData){ //[{},{},{},{},...]]에서 {}가져옴
+				tr = document.createElement('tr');
+				tr.id = row.userId;
+				for(let field of th){ //{}에서 th와 일치하는 데이터의 값을 추출
+					td = document.createElement('td');
+					
+				if(row[field] != undefined){
+						if(field == 'userId'){
+							td.innerHTML = row[field];
+							td.onclick = function(){
+								getUserInfo(row[field]);
+							}
+						}else if(field == 'userName'){
+							td.innerHTML = row[field]
+							td.onclick = function(){
+								setUserInfo(row.userId); //setUserInfo는 매개값으로 userid를 줘야함.
+							}
+						}else{
+							td.innerHTML = row[field];
+						}
+						console.log(row[field]);
+					}else{
+						td.innerHTML = '';
+					}
+					tr.appendChild(td);	
+				}
+				td.innerHTML = `<button onclick="delMem('${row.userId}')">삭제</button>`;
+				//button = document.createElement('button');
+				//button.innerHTML = "삭제";
+				//td.appendChild(button);
+		        tr.appendChild(td);
+				tbody.appendChild(tr);
+				console.log(row);
+		         
+			}
+		}
+		
+		function getUserInfo(id){ //한명의 데이터만 가져오려고
+			let xhtp = new XMLHttpRequest();
+			xhtp.onreadystatechange = function(){
+				if(xhtp.readyState == 4 && xhtp.status == 200){
+					let data = JSON.parse(xhtp.responseText);
+					console.log(data);
+					showDetail(data);
+				}
+			}
+			xhtp.open('get','../GetMemberOneJsonServ?id='+id);
+			xhtp.send();
+		}
+		
+		//selectMember
+		//한명의 데이터만 가져와서 #content에다 뿌려주기
+		function showDetail(row){
+			console.log(row);
+			//원래 요소가 있으면 요소를 지워주세요.
+			let contentElm = document.querySelector('#content');
+			let cnt = contentElm.children.length; //contentElm.children=row
+			for(let i=0; i<cnt;i++){
+				contentElm.children[0].remove();
+			}
+			
+			//상세화면을 생성해주는 부분
+			for(let title of titles){ //const titles의 배열크기만큼 반복
+				let rowDiv = document.createElement('div');
+				rowDiv.className = 'row';
+				
+				let titleDiv = document.createElement('div');
+				let contentDiv = document.createElement('div');
+				rowDiv.append(titleDiv,contentDiv);
+				
+				titleDiv.className = 'title';
+				titleDiv.textContent = title; //userId
+				
+				contentDiv.className = 'content';
+				contentDiv.textContent = row[title];
+				
+				document.getElementById('content').appendChild(rowDiv);
+			}
+		}
+		
+		getUserInfo('user1');
+		
+		//insert-등록버튼누르면 DB에 저장 
+		function addMember(){
+			//입력화면의 값을 변수에 담아주기
+			let id = document.getElementById('user_id').value;
+			let name = document.getElementById('user_name').value;
+			let birth = document.getElementById('user_birth').value;
+			let addr = document.getElementById('user_addr').value;
+			let phone = document.getElementById('user_phone').value;
+			let gen = document.querySelector('input[name="gender"]:checked').value;
+
+			//DB에다 넣기 위해 ajax호출
+			let param = `u_i=${id}&u_n=${name}&u_b=${birth}&u_a=${addr}&u_p=${phone}&u_g=${gen}`; //파라미터를 변수에 담아줌  
+			let xhtp = new XMLHttpRequest();
+			xhtp.open('post','../GetMemberJsonServ');
+			xhtp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhtp.send(param); //post방식 이용할때는 헤더정보 필요함
+			
+			//입력 후 처리. 제대로 입력됐으면 입력값 출력, 안됐으면 오류 메시지창 출력
+			xhtp.onload = function(){ //입력하는거니까 onload
+				console.log(xhtp.responseText);
+				let result = JSON.parse(xhtp.responseText) //서버에 요청해서 응답으로 받은 데이터를 문자열로 반환.//{userId:?, userName:?, ...}
+				console.log(result);
+				if(result.retCode == "OK"){
+					window.alert(`id:${result.userId} 를 등록했습니다.`); 
+					let tbody = document.querySelector('table>tbody');
+					tbody.appendChild(getRow(result));
+				}else{
+					window.alert(result.retMsg);
+				}
+			}
+		}
+		//한건씩 처리 
+		 function getRow(row) { // {userId:?, userName:?, address:?}
+	         let tr = document.createElement('tr');
+	         tr.id = row.userId;
+	         for (let title of titles) {
+	            let td = document.createElement('td');
+	          	if(title == 'userId'){
+	          		td.onclick = function(){
+	          			getUserInfo(row['userId']);
+	          		}
+	          	}else if(title=='userName'){
+	          		td.onclick = function(){
+	          			setUserInfo(row['userId']);
+	          		}
+	          	}
+	            let content = row[title];
+	            if (title == 'birthDate' && content !== undefined) {
+	               content = content.substring(0, 10);
+	            }
+	            td.textContent = content;
+	            tr.appendChild(td);
+	         }
+	         // 추가 칼럼.
+	         let td = document.createElement('td');
+	         td.innerHTML = `<button onclick="delMem('${row.userId}')">삭제</button>`;
+	         tr.appendChild(td);
+	         return tr;
+	      }
+		
+		//사용자 삭제
+		function delMem(id){
+			console.log(id);
+			// id를 가지고 db처리해주는 서블릿.
+			// 정상처리 후 화면에서도 삭제.
+			let xhtp = new XMLHttpRequest();
+			xhtp.open('get','../ModifyMemberServlet?id='+id);
+			xhtp.send();
+			xhtp.onload = delMemCallBack;
+		}
+		
+		//삭제 후 콜백함수.
+		function delMemCallBack(){
+			console.log(this.responseText);
+			let result = JSON.parse(this.responseText)
+			if(result.retCode == "OK"){
+				window.alert(`id:${result.userId} 를 삭제완료했습니다.`);
+				document.getElementById(result.userId).remove();
+			}else{
+				window.alert(result.retMsg);
+			}
+			
+		}
+		
+		//화면수정 기능
+		function setUserInfo(id){ //한명의 데이터만 가져와서 위에 input에다 출력
+			let xhtp = new XMLHttpRequest();
+			xhtp.onload = setDetailCallBack;
+			xhtp.open('get','../GetMemberOneJsonServ?id='+id);
+			xhtp.send();
+		}
+		//화면수정 콜백함수
+		function setDetailCallBack(){
+			let result = JSON.parse(this.responseText); //{userId:?, userName:?, ...}이런 형태
+			document.getElementById("user_id").value = result.userId;
+			document.getElementById("user_name").value 
+				= result.userName == undefined ? '' : result.userName; //데이터가 널값일경우 undefined 보여지므로 ''로 대체
+			document.getElementById("user_phone").value 
+				= result.phone == undefined ? '' : result.phone; //데이터가 널값일경우 undefined 보여지므로 ''로 대체
+			document.getElementById("user_addr").value 
+				= result.address == undefined ? '' : result.address; //데이터가 널값일경우 undefined 보여지므로 ''로 대체
+			//날짜표시부분...년:월:일 시:분:초 => 년:월:일
+			if(result.birthDate != undefined && result.birthDate != ''){
+				document.getElementById("user_birth").value = result.birthDate.substring(0,10);			
+			}else{
+				document.getElementById("user_birth").value
+				= result.birthDate == undefined ? '' : result.birthDate; //data가 널값인 경우 ''출력. undefined안나오게
+			}
+			// radio버튼 찾아서 가지고 있는 값이 value => result.gender와 같은 요소의 checked변경
+			let genders = document.querySelectorAll('.control>input[type="radio"]');
+			for(let i=0;i<genders.length;i++){
+				if(genders[i].value == result.gender){
+					genders[i].checked == true;
+				}
+			}
+		}
+		
+		//데이터 수정처리
+		function modMember(){
+			let id = document.getElementById('user_id').value;
+			let name = document.getElementById('user_name').value;
+			let birth = document.getElementById('user_birth').value;
+			let addr = document.getElementById('user_addr').value;
+			let phone = document.getElementById('user_phone').value;
+			let gen = document.querySelector('input[name="gender"]:checked').value;
+			let param = `id=${id}&nm=${name}&br=${birth}&ad=${addr}&ph=${phone}&gn=${gen}`; 
+
+			//DB에다 넣기 위해 ajax호출
+			let xhtp = new XMLHttpRequest();
+			xhtp.open('post','../ModifyMemberServlet');
+			xhtp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//post방식 이용할때는 헤더정보 필요함
+			xhtp.send(param);
+			xhtp.onload = modMemberCallBack;
+		}
+		//수정처리 콜백
+		function modMemberCallBack(){
+			let result = JSON.parse(this.responseText);
+			console.log(result); //우선 데이터가 어떻게 넘어오는지 확인위해 출력해보기.
+			let selectedTr = document.getElementById(result.retVal.userId);
+			console.log(selectedTr); //tr하나를 가지고 왔음을 확인가능.
+			
+			//화면에 있는 필드의 순서와 타이틀에 있는 순서가 같아서 반복문으로 처리함.(나는 아닐수도..)
+			for(let i=1; i<titles.length; i++){ //아이디는 변경불가하므로 1부터 루핑
+				selectedTr.children[i].textContent = result.retVal[titles[i]];
+			}
+		}
+		
+		
+	</script>
+</body>
+
+</html>

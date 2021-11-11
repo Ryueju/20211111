@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>shop-homepage/item.html</title>
+
+	<style>
+		*{
+			font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+			font-size: large;
+		}
+
+		#container{
+			width: 80%;
+			margin: 0 auto;
+		}
+		#top{
+			margin-bottom : 250px;
+			height: 250px;
+		}
+		#center{
+			clear: both;
+		}
+		.image{
+			width:200px;
+			height:200px;
+			float : left;
+		}
+		img{
+			width: 200px;
+			height: 200px;
+		}
+		ul{
+			list-style-type: none;
+			padding-left : 100px;
+		}
+		.content{
+		 padding-left: 90px;
+		 padding-top: 30px;
+			margin-top:30px;
+			margin-left: 90px;
+		}
+		#center{
+			margin: 0 auto;
+			margin-top:30px;
+			padding-top: 20px;
+		}
+	</style>
+	<script src="jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+		
+	<div id="container">
+			<div id="top">
+
+				<div class="image">
+
+				</div>
+
+				<div class="content">
+					<ul>
+
+						<li id="prod_id"></li>
+							<li id="prod_name"></li>
+							<li id="like_it"></li>
+							<li id="origin_price"></li>
+							<li id="sale_price"></li>
+						</ul>
+				</div>
+
+				<div id="center">
+
+				</div>
+			</div>
+		<!-- 상품아이디<div id="prodId"></div>
+		상품명<div id="prodName"></div>
+	</div>
+	<h3>item.page</h3> -->
+	<script>
+		let loc = location.href; //문자열
+		let pos = loc.indexOf('=');
+		let id = loc.substring(pos + 1);
+
+		$.ajax({
+			url: '../GetItemOneServlet',
+			data:{
+				prod_id: id, //파라미터 이름 : 실제 값 
+			},
+			dataType: 'json',
+			success: function (result) {
+				console.log(result);
+				let img = $('<img>').attr({
+					'src' : '../image/' + result.prodImage,
+					'width' : '100px'
+				
+			});
+			$('.image').append(img);
+			$('#prod_id').text('상품아이디 : ' + result.prodId);
+			$('#prod_name').text('상품명 : ' + result.prodName);
+			$('#like_it').text('평점 : ' + result.likeIt);
+			$('#origin_price').text('가격 : ' + result.originPrice);
+			$('#sale_price').text('할인가격 : ' + result.salePrice);
+
+			$('#center').html(result.prodDesc);
+
+				// $('#prodId').text(result[0].prodId);
+				// $('#prodName').text(result[0].prodName);
+			},
+			error: function (reject) {
+				//console.error(reject);
+			}
+		});
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>jQuery/jQuery.html</title>
+<script src="jquery-3.6.0.min.js"></script>
+<script>
+
+document.addEventListener("DOMContentLoaded",function(){
+	
+})
+btn.addEventListener('click', function(){
+	
+});
+btn.onclick = function(){
+	
+};
+
+
+	$(document).ready(loadFnc);//$(document).ready() = html페이지 전체 읽고나서 function실행
+
+	
+	function loadFnc(){ 
+		let table = $('<table></table>');
+		$(table).attr('id', 'tbl'); //setAttribute() = attr()
+		$(table).append($('<tbody></tbody>'));
+		//console.log(table); //<table></table>
+
+		//$('table') //table이라는 태그를 가져오겠다.
+		//$('<table></table>') //table이라는 태그를 만들겠다.
+
+		$(table).append($('<caption>TABLE</caption>'));
+		$('div>div').append(table);
+
+		$('#tbl').append($('<caption>TABLE</caption>'));
+		console.log(table);
+		
+		//$('#tbl>caption').html(); //해당되는 태그의 innerHTML을 불러옴
+		$('#tbl>caption').text(); //해당되는 태그의 text(innerText(textContent))을 불러옴
+
+	}
+</script>
+</head>
+<body>
+	<div id="container">
+		<div id="show"></div>
+	</div>
+</body>
+</html>
